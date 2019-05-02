@@ -8,10 +8,16 @@ import com.example.android.pets.data.PetsContract.PetEntry;
 
 public final class PetDbHelper extends SQLiteOpenHelper {
 
+    /*
+    Constants
+     */
     public static final String LOG_TAG = PetDbHelper.class.getSimpleName();
     private final static String DATABASE_NAME = "shelter.db";
     private final static int DATABASE_VERSION = 1;
 
+    /*
+    Queries
+     */
     private final String SQL_CREATE_PETS_TABLE = "CREATE TABLE " + PetEntry.TABLE_NAME + " (" +
             PetEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "+
             PetEntry.COLUMN_PET_NAME + " TEXT NOT NULL, "+
@@ -21,6 +27,10 @@ public final class PetDbHelper extends SQLiteOpenHelper {
 
     public PetDbHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
+    }
+
+    public PetDbHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
