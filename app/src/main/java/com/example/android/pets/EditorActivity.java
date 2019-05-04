@@ -15,10 +15,13 @@
  */
 package com.example.android.pets;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,12 +29,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.android.pets.data.PetsContract;
+import com.example.android.pets.data.PetsContract.PetEntry;
+import com.example.android.pets.data.PetDbHelper;
 /**
  * Allows user to create a new pet or edit an existing one.
  */
 public class EditorActivity extends AppCompatActivity {
 
+    private final String LOG_TAG = getClass().getSimpleName();
     /** EditText field to enter the pet's name */
     private EditText mNameEditText;
 
@@ -49,12 +58,14 @@ public class EditorActivity extends AppCompatActivity {
      * 0 for unknown gender, 1 for male, 2 for female.
      */
     private int mGender = 0;
+    private PetDbHelper petDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
+        petDbHelper = new PetDbHelper(this);
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_pet_name);
         mBreedEditText = (EditText) findViewById(R.id.edit_pet_breed);
@@ -117,7 +128,8 @@ public class EditorActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Do nothing for now
+                insertPet();
+                finish();
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -130,5 +142,24 @@ public class EditorActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void insertPet() {
+
+        String petName = mNameEditText.getText().toString().trim();
+        String petBreed = mBreedEditText.getText().toString().trim();
+        int petGenger = mGender;
+        int petWeight = Integer.parseInt(mWeightEditText.getText().toString().trim());
+
+        SQLiteDatabase database = petDbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(PetsContract.PetEntry.COLUMN_PET_NAME, petName);
+        values.put(PetsContract.PetEntry.COLUMN_PET_BREED, petBreed);
+        values.put(PetsContract.PetEntry.COLUMN_PET_GENDER, petGenger);
+        values.put(PetsContract.PetEntry.COLUMN_PET_WEIGHT, petWeight);
+
+        long newRowId = database.insert(PetEntry.TABLE_NAME, null, values);
+        Toast.makeText(this, "Adder row: "+newRowId, Toast.LENGTH_SHORT).show();
+        Log.v(LOG_TAG, "Added rowid"+newRowId);
     }
 }

@@ -44,6 +44,12 @@ public class CatalogActivity extends AppCompatActivity {
         petDbHelper = new PetDbHelper(this);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        displayDatabaseInfo();
+    }
+
     private void insertPet() {
 
         SQLiteDatabase database = petDbHelper.getWritableDatabase();
