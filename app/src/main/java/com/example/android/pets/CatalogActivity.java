@@ -77,12 +77,20 @@ public class CatalogActivity extends AppCompatActivity {
 
         // Perform this raw SQL query "SELECT * FROM pets"
         // to get a Cursor that contains all rows from the pets table.
+        String[] projection = {PetEntry.COLUMN_PET_NAME, PetEntry.COLUMN_PET_GENDER};
+        String selection = PetEntry.COLUMN_PET_GENDER + "=?";
+        String[] selectionArgs = new String[] {PetEntry.GENDER_MALE+""};
         Cursor cursor = db.rawQuery("SELECT * FROM " + PetEntry.TABLE_NAME, null);
+        Cursor newCursor = db.query(PetEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
         try {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
             // pets table in the database).
             TextView displayView = (TextView) findViewById(R.id.text_view_pet);
             displayView.setText("Number of rows in pets database table: " + cursor.getCount());
+            StringBuilder stringBuilder = new StringBuilder();
+
+            //TODO display information
+
         } finally {
             // Always close the cursor when you're done reading from it. This releases all its
             // resources and makes it invalid.
