@@ -1,9 +1,11 @@
 package com.example.android.pets;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.pets.data.PetsContract.PetEntry;
 import com.example.android.pets.data.PetDbHelper;
@@ -59,7 +62,9 @@ public class CatalogActivity extends AppCompatActivity {
         values.put(PetEntry.COLUMN_PET_GENDER, PetEntry.GENDER_MALE);
         values.put(PetEntry.COLUMN_PET_WEIGHT, 7);
 
-        long newRowId = database.insert(PetEntry.TABLE_NAME, null, values);
+//        long newRowId = database.insert(PetEntry.TABLE_NAME, null, values);
+        Uri contentUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+        long newRowId = ContentUris.parseId(contentUri);
         Log.v(LOG_TAG, "Added rowid"+newRowId);
     }
 
@@ -68,12 +73,16 @@ public class CatalogActivity extends AppCompatActivity {
      * the pets database.
      */
     private void displayDatabaseInfo() {
+
+        /*
         // To access our database, we instantiate our subclass of SQLiteOpenHelper
         // and pass the context, which is the current activity.
         PetDbHelper mDbHelper = new PetDbHelper(this);
 
         // Create and/or open a database to read from it
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        */
 
         // Perform this raw SQL query "SELECT * FROM pets"
         // to get a Cursor that contains all rows from the pets table.
@@ -82,7 +91,10 @@ public class CatalogActivity extends AppCompatActivity {
                 PetEntry.COLUMN_PET_BREED,
                 PetEntry.COLUMN_PET_WEIGHT};
 
-        Cursor cursor = db.query(PetEntry.TABLE_NAME, projection, null, null, null, null, null);
+
+//        Cursor cursor = db.query(PetEntry.TABLE_NAME, projection, null, null, null, null, null);
+
+        Cursor cursor = getContentResolver().query(PetEntry.CONTENT_URI, projection, null, null, null);
 
         TextView displayView = (TextView) findViewById(R.id.text_view_pet);
 
@@ -135,6 +147,7 @@ public class CatalogActivity extends AppCompatActivity {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
                 insertPet();
+                Toast.makeText(this, "Pet saved", Toast.LENGTH_SHORT).show();
                 displayDatabaseInfo();
                 return true;
             // Respond to a click on the "Delete all entries" menu option

@@ -15,8 +15,10 @@
  */
 package com.example.android.pets;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -129,6 +131,7 @@ public class EditorActivity extends AppCompatActivity {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 insertPet();
+                Toast.makeText(this, "Pet saved", Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
             // Respond to a click on the "Delete" menu option
@@ -158,7 +161,8 @@ public class EditorActivity extends AppCompatActivity {
         values.put(PetsContract.PetEntry.COLUMN_PET_GENDER, petGenger);
         values.put(PetsContract.PetEntry.COLUMN_PET_WEIGHT, petWeight);
 
-        long newRowId = database.insert(PetEntry.TABLE_NAME, null, values);
+        Uri contentUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+        long newRowId = ContentUris.parseId(contentUri);
         Toast.makeText(this, "Adder row: "+newRowId, Toast.LENGTH_SHORT).show();
         Log.v(LOG_TAG, "Added rowid"+newRowId);
     }
